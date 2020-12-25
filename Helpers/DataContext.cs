@@ -8,7 +8,13 @@ namespace WebApi.Helpers
     {
         public DbSet<Account> Accounts { get; set; }
 
-        public DbSet<countries> countries { get; set; }
+        public DbSet<Countries> countries { get; set; }
+
+        public DbSet<Children> Children { get; set; }
+
+        public DbSet<ChildMemory> ChildMemory { get; set; }
+
+        public DbSet<ChildSkill> ChildSkill { get; set; }
 
         public DbSet<states> states { get; set; }
 

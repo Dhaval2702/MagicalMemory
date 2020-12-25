@@ -1,6 +1,7 @@
 using AutoMapper;
 using WebApi.Entities;
 using WebApi.Models.Accounts;
+using WebApi.Models.Children;
 using WebApi.Models.Country;
 
 namespace WebApi.Helpers
@@ -13,11 +14,18 @@ namespace WebApi.Helpers
             CreateMap<Account, AccountResponse>();
             CreateMap<Account, AuthenticateResponse>();
             CreateMap<RegisterRequest, Account>();
-            CreateMap<countries, CountryResponse>();
+            CreateMap<Countries, CountryResponse>();
             CreateMap<states, StateResponse>();
-            CreateMap<CountryRequest, countries>();
-            CreateMap<StateRequest, states>();
-            CreateMap<CreateRequest, Account>();
+            CreateMap<CountryRequest, Countries>();
+            CreateMap<Children, ChildrenResponse>();
+            CreateMap<ChildrenRequest, Children>()
+              .ForMember(dest => dest.ChildSkill, opt => opt.MapFrom(src => src.ChildSkillRequest))
+              .ForMember(dest => dest.ChildMemory, opt => opt.MapFrom(src => src.ChildMemoryRequest));
+
+            CreateMap<ChildMemory, ChildMemoryResponse>();
+            CreateMap<ChildMemoryRequest, ChildMemory>();
+            CreateMap<ChildSkill, ChildSkillResponse>();
+            CreateMap<ChildSkillRequest, ChildSkill>();
             CreateMap<UpdateRequest, Account>()
                 .ForAllMembers(x => x.Condition(
                     (src, dest, prop) =>

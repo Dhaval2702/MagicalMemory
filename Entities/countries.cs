@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Entities
 {
-    public class countries
+    public class Countries
     {
         public int id { get; set; }
         public string sortName { get; set; }
