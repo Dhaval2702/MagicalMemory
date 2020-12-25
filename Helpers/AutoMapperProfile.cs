@@ -1,6 +1,7 @@
 using AutoMapper;
 using WebApi.Entities;
 using WebApi.Models.Accounts;
+using WebApi.Models.Children;
 using WebApi.Models.Country;
 
 namespace WebApi.Helpers
@@ -13,7 +14,11 @@ namespace WebApi.Helpers
             CreateMap<Account, AccountResponse>();
             CreateMap<Account, AuthenticateResponse>();
             CreateMap<RegisterRequest, Account>();
+            CreateMap<DependentChildrenRequest, DependentChildren>();
             CreateMap<countries, CountryResponse>();
+            CreateMap<ChildPhotoMemory, ChildPhotoMemoryResponse>();
+            CreateMap<ChildWeightDetail, ChildWeightDetailsResponse>();
+            CreateMap<DependentChildren, DependentChildrenresponse>();
             CreateMap<states, StateResponse>();
             CreateMap<CountryRequest, countries>();
             CreateMap<StateRequest, states>();

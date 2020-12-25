@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using WebApi.Entities;
 
@@ -6,17 +7,10 @@ namespace WebApi.Models.Accounts
     public class CreateRequest
     {
         [Required]
-        public string Title { get; set; }
+        public string MotherFullName { get; set; }
 
         [Required]
-        public string FirstName { get; set; }
-
-        [Required]
-        public string LastName { get; set; }
-
-        [Required]
-        [EnumDataType(typeof(Role))]
-        public string Role { get; set; }
+        public string FatherFullName { get; set; }
 
         [Required]
         [EmailAddress]
@@ -29,5 +23,23 @@ namespace WebApi.Models.Accounts
         [Required]
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
+
+        [Range(typeof(bool), "true", "true")]
+        public bool AcceptTerms { get; set; }
+
+        [Required]
+        public int CountryCode { get; set; }
+
+        [Required]
+        public string Country { get; set; }
+
+        [Required]
+        public string State { get; set; }
+
+        [Required]
+        public DateTime DateOfBirth { get; set; }
+
+        [Required]
+        public string MobileNumber { get; set; }
     }
 }

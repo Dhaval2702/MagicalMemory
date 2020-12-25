@@ -37,6 +37,7 @@ namespace WebApi
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<IChildrenService, ChildrenService>();
         }
 
         // configure the HTTP request pipeline

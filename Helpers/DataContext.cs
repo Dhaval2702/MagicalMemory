@@ -12,6 +12,13 @@ namespace WebApi.Helpers
 
         public DbSet<states> states { get; set; }
 
+        public DbSet<DependentChildren> DependentChildren { get; set; }
+
+        public DbSet<ChildPhotoMemory> ChildPhotoMemory { get; set; }
+
+        public DbSet<ChildWeightDetail> ChildWeightDetail { get; set; }
+
+
         private readonly IConfiguration Configuration;
 
         public DataContext(IConfiguration configuration)
