@@ -14,8 +14,10 @@ namespace WebApi.Entities
         public int BirthWeight { get; set; }
         public string ChildPhoto { get; set; }
         public int AccountId { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public string BloodGroup { get; set; }
+        public string RelationShip { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
 
         [ForeignKey("ChildId")]
         public virtual ICollection<ChildSkill> ChildSkill { get; set; }

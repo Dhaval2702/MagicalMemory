@@ -12,13 +12,13 @@ namespace WebApi.Entities
         [Key]
         public Guid ChildSkillId { get; set; }
         public string SkillName { get; set; }
-        public DateTime SkillCreatedDate { get; set; }
-        public DateTime SkillUpdatedDate { get; set; }
+        public DateTime? SkillCreatedDate { get; set; }
+        public DateTime? SkillUpdatedDate { get; set; }
 
         [ForeignKey("ChildId")]
         public Guid ChildId { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
 
       //  public virtual ICollection<Children> Children { get; set; }
     }

@@ -18,9 +18,14 @@ namespace WebApi.Helpers
             CreateMap<states, StateResponse>();
             CreateMap<CountryRequest, Countries>();
             CreateMap<Children, ChildrenResponse>();
+
             CreateMap<ChildrenRequest, Children>()
               .ForMember(dest => dest.ChildSkill, opt => opt.MapFrom(src => src.ChildSkillRequest))
               .ForMember(dest => dest.ChildMemory, opt => opt.MapFrom(src => src.ChildMemoryRequest));
+
+            CreateMap<Children, ChildrenResponse>()
+                         .ForMember(dest => dest.ChildSkillResponse, opt => opt.MapFrom(src => src.ChildSkill))
+                       .ForMember(dest => dest.ChildMemoryResponse, opt => opt.MapFrom(src => src.ChildMemory));
 
             CreateMap<ChildMemory, ChildMemoryResponse>();
             CreateMap<ChildMemoryRequest, ChildMemory>();
