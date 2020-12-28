@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using WebApi.Models.Children;
 using WebApi.Services;
 
@@ -87,5 +89,11 @@ namespace WebApi.Controllers
             return Ok(response);
         }
 
-    }
+        [HttpPut("upload-photo-memory")]
+        public IActionResult UploadPhotoMemory(Guid childId,Guid memoryId,string memoryName, List<IFormFile> formFiles)
+        {
+            var response = _childService.AddUpdateChildMemories(childId, memoryId, memoryName, formFiles);
+            return Ok(response);
+        }
+   }
 }

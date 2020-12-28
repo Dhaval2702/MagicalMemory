@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using WebApi.Entities;
+using WebApi.Helpers;
 using WebApi.Models.Accounts;
 using WebApi.Services;
 
@@ -90,7 +91,7 @@ namespace WebApi.Controllers
         public IActionResult Register(RegisterRequest model)
         {
             _accountService.Register(model, Request.Headers["origin"]);
-            return Ok(new { message = "Registration successful, please check your email for verification instructions" });
+            return Ok(new { message = ValidationMessages.Messages.RegistrationSuccessful });
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace WebApi.Controllers
         public IActionResult VerifyEmail(string verificationtoken)
         {
             _accountService.VerifyEmail(verificationtoken);
-            return Ok(new { message = "Thank you Mom.Verification successful, you can now login" });
+            return Ok(new { message = ValidationMessages.Messages.VerifyEmail });
         }
 
         /// <summary>
@@ -114,7 +115,7 @@ namespace WebApi.Controllers
         public IActionResult ForgotPassword(ForgotPasswordRequest model)
         {
             _accountService.ForgotPassword(model, Request.Headers["origin"]);
-            return Ok(new { message = "Please check your email for password reset instructions" });
+            return Ok(new { message = ValidationMessages.Messages.ForgotPassword });
         }
         /// <summary>
         /// Validation of the reset token for the user.
@@ -137,7 +138,7 @@ namespace WebApi.Controllers
         public IActionResult ResetPassword(ResetPasswordRequest model)
         {
             _accountService.ResetPassword(model);
-            return Ok(new { message = "Password reset successful, you can now login" });
+            return Ok(new { message = ValidationMessages.Messages.ResetPassword });
         }
 
         /// <summary>

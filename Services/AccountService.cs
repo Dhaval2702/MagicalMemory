@@ -55,8 +55,8 @@ namespace WebApi.Services
         {
             var account = _context.Accounts.SingleOrDefault(x => x.Email == model.Email);
 
-            if (account == null || !account.IsVerified  || !BC.Verify(model.Password, account.PasswordHash))
-                throw new AppException("Email or password is incorrect");
+            if (account == null || !account.IsVerified || !BC.Verify(model.Password, account.PasswordHash))
+                throw new AppException(ValidationMessages.Messages.LoginFailed);
 
             // authentication successful so generate jwt and refresh tokens
             var jwtToken = generateJwtToken(account);
@@ -146,7 +146,7 @@ namespace WebApi.Services
         {
             var account = _context.Accounts.SingleOrDefault(x => x.VerificationToken == token);
 
-            if (account == null) throw new AppException("Verification failed");
+            if (account == null) throw new AppException(ValidationMessages.Messages.EmailConfirmationFailed);
 
             account.Verified = DateTime.UtcNow;
             account.VerificationToken = null;
@@ -308,8 +308,8 @@ namespace WebApi.Services
 
         private void removeOldRefreshTokens(Account account)
         {
-            account.RefreshTokens.RemoveAll(x => 
-                !x.IsActive && 
+            account.RefreshTokens.RemoveAll(x =>
+                !x.IsActive &&
                 x.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow);
         }
 
@@ -327,9 +327,16 @@ namespace WebApi.Services
             string message;
             if (!string.IsNullOrEmpty(origin))
             {
+
                 var verifyUrl = $"{origin}/accounts/verify-email?verificationtoken={account.VerificationToken}";
-                message = $@"<p>Thank you Mom. Lets verify our email to get account to be activated.</p>
-                             <p><a href=""{verifyUrl}"">{verifyUrl}</a></p>";
+                message = $@"<h1>Dear" + account.MotherFullName + "</h1><br/>";
+                message = message + $@"<p>Childhood is a short time, a fleeting moment of your life you wish you could have stayed.”
+                                            We ensure you, we will capture and keep your baby's lavis memory in wonderful way.</p> 
+                                             <br/><br/>Please Click on below Link to Confirm your baby as a part of our family<br/><br/>
+                             < p><a href=""{verifyUrl}"">{verifyUrl}</a></p><br/>";
+
+                message = message + "With regards<br/>";
+                message = message + "MYBaby";
             }
             else
             {
@@ -339,9 +346,9 @@ namespace WebApi.Services
 
             _emailService.Send(
                 to: account.Email,
-                subject: "Sign-up Verification API - Verify Email",
+                subject: "My Baby Team - Verify Email",
                 html: $@"<h4>Verify Email</h4>
-                         <p>Thanks for registering!</p>
+                         <p>Thanks for connecting with Us!</p>
                          {message}"
             );
         }

@@ -4,7 +4,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using PaypalExpressCheckout.BusinessLogic;
+using PaypalExpressCheckout.BusinessLogic.ConfigOptions;
+using PaypalExpressCheckout.BusinessLogic.Interfaces;
 using System;
+using System.IO;
 using WebApi.Helpers;
 using WebApi.Middleware;
 using WebApi.Services;
@@ -29,7 +34,8 @@ namespace WebApi
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen();
-
+            services.AddSingleton<IFileProvider>(new PhysicalFileProvider(
+             Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
             // configure strongly typed settings object
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
@@ -38,13 +44,15 @@ namespace WebApi
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IChildService, ChildService>();
+            services.AddSingleton<IPaypalServices, PaypalServices>();
+            services.Configure<PayPalAuthOptions>(Configuration.GetSection("PayPalSettings"));
         }
 
         // configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext context)
         {
             // migrate database changes on startup (includes initial db creation)
-           // context.Database.Migrate();
+            // context.Database.Migrate();
 
             // generated swagger json and swagger ui middleware
             app.UseSwagger();

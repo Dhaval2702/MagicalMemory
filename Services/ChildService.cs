@@ -1,8 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApi.Entities;
 using WebApi.Helpers;
 using WebApi.Models.Children;
@@ -19,6 +24,7 @@ namespace WebApi.Services
         int DeleteChildrenDetails(Guid childId);
         ChildrenResponse GetChildrenDetails(Guid ChildId);
         List<ChildrenResponse> GetAllChildrenDetailsByAccountId(int accountId);
+        bool AddUpdateChildMemories(Guid childId, Guid memoryId, string memoryName, List<IFormFile> formFiles);
 
     }
 
@@ -29,13 +35,16 @@ namespace WebApi.Services
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IHostingEnvironment _hostingEnvironment;
+
 
         public ChildService(
          DataContext context,
-         IMapper mapper)
+         IMapper mapper, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             _mapper = mapper;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         /// <summary>
@@ -51,24 +60,6 @@ namespace WebApi.Services
             adnewChildren.ChildId = Guid.NewGuid();
             adnewChildren.CreatedDate = DateTime.Now;
             adnewChildren.UpdatedDate = null;
-            foreach (var childMemory in adnewChildren.ChildMemory)
-            {
-                childMemory.MemoryId = Guid.NewGuid();
-                childMemory.CreatedDate = DateTime.Now;
-                childMemory.UpdateDate = null;
-                childMemory.ChildId = adnewChildren.ChildId;
-            }
-
-            foreach (var childSkill in adnewChildren.ChildSkill)
-            {
-                childSkill.ChildSkillId = Guid.NewGuid();
-                childSkill.SkillCreatedDate = DateTime.Now;
-                childSkill.SkillUpdatedDate = null;
-                childSkill.CreatedDate = DateTime.Now;
-                childSkill.UpdatedDate = null;
-                childSkill.ChildId = adnewChildren.ChildId;
-            }
-
             _context.Children.Add(adnewChildren);
             int success = _context.SaveChanges();
             if (success != 0)
@@ -173,6 +164,83 @@ namespace WebApi.Services
             return _mapper.Map<List<ChildrenResponse>>(childrenDetails);
         }
 
+        /// <summary>
+        /// Add UpdateChild Memories
+        /// </summary>
+        /// <param name="childId"></param>
+        /// <param name="memoryId"></param>
+        /// <param name="files"></param>
+        /// <returns></returns>
+        public bool AddUpdateChildMemories(Guid childId, Guid memoryId, string memoryName, List<IFormFile> formFiles)
+        {
+            bool fileuploaded = UploadMemoryFiles(childId, memoryId, formFiles);
+            return fileuploaded;
+        }
 
+
+        /// <summary>
+        /// Process Multiple Image Files here.
+        /// </summary>
+        /// <param name="childId"></param>
+        /// <param name="memoryId"></param>
+        /// <param name="formFiles"></param>
+        /// <returns></returns>
+        private bool UploadMemoryFiles(Guid childId, Guid memoryId, List<IFormFile> formFiles)
+        {
+            int addUpdatePhoto = 0;
+            bool fileuploaded = false;
+            foreach (var file in formFiles)
+            {
+                var childrenDetails = _context.ChildMemory
+                                                 .Where(x => x.ChildId == childId && x.MemoryId == memoryId).FirstOrDefault();
+
+                if (childrenDetails == null)
+                {
+                    ChildMemory childMemory = new ChildMemory();
+                    childMemory.ChildId = childId;
+                    childMemory.MemoryId = Guid.NewGuid();
+                    childMemory.MemoryName = string.Empty;
+                    childMemory.MemoryPhoto = UploadImageFileToServer(file, childId);
+                    _context.ChildMemory.Add(childMemory);
+                    addUpdatePhoto = _context.SaveChanges();
+                }
+
+                else
+                {
+                    childrenDetails.MemoryPhoto = UploadImageFileToServer(file, childId);
+                    _context.ChildMemory.Update(childrenDetails);
+                    addUpdatePhoto = _context.SaveChanges();
+                }
+
+                if (addUpdatePhoto > 0)
+                {
+                    fileuploaded = true;
+                }
+            }
+
+            return fileuploaded;
+        }
+
+        private string UploadImageFileToServer(IFormFile file, Guid childId)
+        {
+            var fileNameWithPath = string.Empty;
+            if (file.Length > 0)
+            {
+                // full path to file in temp location
+                var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PhotoMemories", childId.ToString());
+                fileNameWithPath = string.Concat(filePath, "\\", file.FileName);
+
+                FileInfo fileInfo = new FileInfo(filePath);
+                if (!fileInfo.Exists)
+                    Directory.CreateDirectory(filePath);
+
+                using (var stream = new FileStream(fileNameWithPath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+            }
+
+            return fileNameWithPath;
+        }
     }
 }
