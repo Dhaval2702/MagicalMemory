@@ -19,12 +19,14 @@ namespace WebApi.Services
     /// </summary>
     public interface IChildService
     {
-        bool AddNewChildDetails(ChildrenRequest childrenRequest);
+        Guid AddNewChildDetails(ChildrenRequest childrenRequest);
         ChildrenResponse UpdateChildrenDetails(Guid ChildId, ChildrenRequest childrenUpdateRequest);
         int DeleteChildrenDetails(Guid childId);
         ChildrenResponse GetChildrenDetails(Guid ChildId);
         List<ChildrenResponse> GetAllChildrenDetailsByAccountId(int accountId);
         bool AddUpdateChildMemories(Guid childId, Guid memoryId, string memoryName, List<IFormFile> formFiles);
+        List<ChildrenPaymentHistoryResponse> AddChildrenPaymentHistory(int accountId, Guid childId, DateTime childDob);
+        List<ChildrenPaymentHistoryResponse> GetChildrenPaymentHistory(Guid childId);
 
     }
 
@@ -52,22 +54,16 @@ namespace WebApi.Services
         /// </summary>
         /// <param name="childrenRequest">childrenRequest</param>
         /// <returns></returns>
-        public bool AddNewChildDetails(ChildrenRequest childrenRequest)
+        public Guid AddNewChildDetails(ChildrenRequest childrenRequest)
         {
-            bool isChildAdded = false;
             // map model to new account object
             var adnewChildren = _mapper.Map<Children>(childrenRequest);
             adnewChildren.ChildId = Guid.NewGuid();
             adnewChildren.CreatedDate = DateTime.Now;
             adnewChildren.UpdatedDate = null;
             _context.Children.Add(adnewChildren);
-            int success = _context.SaveChanges();
-            if (success != 0)
-            {
-                isChildAdded = true;
-            }
-
-            return isChildAdded;
+            _context.SaveChanges();
+            return adnewChildren.ChildId;
         }
 
         /// <summary>
@@ -173,10 +169,46 @@ namespace WebApi.Services
         /// <returns></returns>
         public bool AddUpdateChildMemories(Guid childId, Guid memoryId, string memoryName, List<IFormFile> formFiles)
         {
-            bool fileuploaded = UploadMemoryFiles(childId, memoryId, formFiles);
+            bool fileuploaded = UploadMemoryFiles(childId, memoryId, memoryName, formFiles);
             return fileuploaded;
         }
 
+        /// <summary>
+        /// Add Payment History for the children
+        /// </summary>
+        /// <param name="childrenPaymentHistoryRequest">children Payment History Request</param>
+        /// <returns></returns>
+        public List<ChildrenPaymentHistoryResponse> AddChildrenPaymentHistory(int accountId, Guid childId, DateTime childDob)
+        {
+            List<ChildrenPaymentHistoryResponse> childrenPaymentHistoryResponses = new List<ChildrenPaymentHistoryResponse>();
+            //Extract Year from Child Date of Birth
+            int birthYear = childDob.Year;
+
+            for (int i = 0; i <= 10; i++)
+            {
+                ChildrenPaymentHistoryRequest childrenPaymentHistoryRequest = new ChildrenPaymentHistoryRequest();
+                var childrenPaymentHistory = _mapper.Map<ChildPaymentHistory>(childrenPaymentHistoryRequest);
+                childrenPaymentHistory.ChildPaymentId = Guid.NewGuid();
+                childrenPaymentHistory.AccountId = accountId;
+                childrenPaymentHistory.PaymentYear = Convert.ToString(birthYear + i);
+                childrenPaymentHistory.ChildId = childId;
+                childrenPaymentHistory.CreateDate = DateTime.Now;
+                _context.ChildPaymentHistory.Add(childrenPaymentHistory);
+                _context.SaveChanges();
+                var childPaymentResponse = _mapper.Map<ChildrenPaymentHistoryResponse>(childrenPaymentHistory);
+                childrenPaymentHistoryResponses.Add(childPaymentResponse);
+            }
+
+            return childrenPaymentHistoryResponses;
+        }
+
+
+        public List<ChildrenPaymentHistoryResponse> GetChildrenPaymentHistory(Guid childId)
+        {
+            List<ChildrenPaymentHistoryResponse> childrenPaymentHistoryResponses = new List<ChildrenPaymentHistoryResponse>();
+            var childpaymentHistory = _context.ChildPaymentHistory.Where(x => x.ChildId == childId).ToList();
+            return _mapper.Map<List<ChildrenPaymentHistoryResponse>>(childpaymentHistory);
+        }
 
         /// <summary>
         /// Process Multiple Image Files here.
@@ -185,7 +217,7 @@ namespace WebApi.Services
         /// <param name="memoryId"></param>
         /// <param name="formFiles"></param>
         /// <returns></returns>
-        private bool UploadMemoryFiles(Guid childId, Guid memoryId, List<IFormFile> formFiles)
+        private bool UploadMemoryFiles(Guid childId, Guid memoryId,string memoryName, List<IFormFile> formFiles)
         {
             int addUpdatePhoto = 0;
             bool fileuploaded = false;
@@ -199,7 +231,7 @@ namespace WebApi.Services
                     ChildMemory childMemory = new ChildMemory();
                     childMemory.ChildId = childId;
                     childMemory.MemoryId = Guid.NewGuid();
-                    childMemory.MemoryName = string.Empty;
+                    childMemory.MemoryName = memoryName;
                     childMemory.MemoryPhoto = UploadImageFileToServer(file, childId);
                     _context.ChildMemory.Add(childMemory);
                     addUpdatePhoto = _context.SaveChanges();
@@ -242,5 +274,7 @@ namespace WebApi.Services
 
             return fileNameWithPath;
         }
+
+
     }
 }

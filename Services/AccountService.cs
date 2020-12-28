@@ -38,17 +38,21 @@ namespace WebApi.Services
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
         private readonly IEmailService _emailService;
+        private readonly IChildService _childService;
+
 
         public AccountService(
             DataContext context,
             IMapper mapper,
             IOptions<AppSettings> appSettings,
-            IEmailService emailService)
+            IEmailService emailService,
+            IChildService childService)
         {
             _context = context;
             _mapper = mapper;
             _appSettings = appSettings.Value;
             _emailService = emailService;
+            _childService = childService;
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress)

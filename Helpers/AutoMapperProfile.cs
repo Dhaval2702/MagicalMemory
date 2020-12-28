@@ -17,8 +17,9 @@ namespace WebApi.Helpers
             CreateMap<Countries, CountryResponse>();
             CreateMap<states, StateResponse>();
             CreateMap<CountryRequest, Countries>();
+            CreateMap<ChildrenPaymentHistoryRequest, ChildPaymentHistory>();
             CreateMap<Children, ChildrenResponse>();
-
+            CreateMap<ChildPaymentHistory, ChildrenPaymentHistoryResponse>();
             CreateMap<ChildrenRequest, Children>()
               .ForMember(dest => dest.ChildSkill, opt => opt.MapFrom(src => src.ChildSkillRequest))
               .ForMember(dest => dest.ChildMemory, opt => opt.MapFrom(src => src.ChildMemoryRequest));

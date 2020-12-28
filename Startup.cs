@@ -45,6 +45,7 @@ namespace WebApi
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IChildService, ChildService>();
             services.AddSingleton<IPaypalServices, PaypalServices>();
+            services.AddScoped<IDashBoardService, DashBoardService>();
             services.Configure<PayPalAuthOptions>(Configuration.GetSection("PayPalSettings"));
         }
 

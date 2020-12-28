@@ -12,6 +12,8 @@ namespace WebApi.Helpers
 
         public DbSet<Children> Children { get; set; }
 
+        public DbSet<ChildPaymentHistory> ChildPaymentHistory { get; set; }
+
         public DbSet<ChildMemory> ChildMemory { get; set; }
 
         public DbSet<ChildSkill> ChildSkill { get; set; }

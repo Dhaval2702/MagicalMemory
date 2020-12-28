@@ -35,7 +35,11 @@ namespace WebApi.Controllers
         [HttpPost("add-new-children")]
         public IActionResult AddNewChildDetails(ChildrenRequest model)
         {
-            _childService.AddNewChildDetails(model);
+          Guid childId = _childService.AddNewChildDetails(model);
+
+            //Update ChildPayment History
+
+            _childService.AddChildrenPaymentHistory(model.AccountId, childId, model.ChildDOB);
             return Ok(new { message = "Registration successful, please check your email for verification instructions" });
         }
 
