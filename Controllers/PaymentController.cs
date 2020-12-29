@@ -1,52 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PaypalExpressCheckout.BusinessLogic.Interfaces;
+using WebApi.Helpers;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
-    [ApiController]
+    /// <summary>
+    /// This controller handles the paymentGateway Integration.
+    /// </summary>
     [Route("[controller]")]
-    public class PaymentController : ControllerBase
+    [ApiController]
+    public class PaymentController : BaseController
     {
-        private IPaypalServices _PaypalServices;
+        private readonly IPayUPaymentService _payUPaymentService;
 
-        public PaymentController(IPaypalServices paypalServices)
+
+        public PaymentController(IPayUPaymentService payUPaymentService)
         {
-            _PaypalServices = paypalServices;
+            _payUPaymentService = payUPaymentService;
         }
 
-        //public IActionResult Index()
-        //{
-        //    return Ok();
-        //}
-
-        [HttpPost("create-payment")]
-        public IActionResult CreatePayment()
+        [HttpGet("get-user-payment-details")]
+        public IActionResult GetUserPaymentDetails(int accountId)
         {
-            var payment = _PaypalServices.CreatePayment(1, "https://localhost:44359/Payment/ExecutePayment", "https://localhost:44359/Payment/Cancel", "sale");
-
-            return new JsonResult(payment);
+            var response = _payUPaymentService.getUserPaymentDetails(accountId);
+            return Ok(response);
         }
 
-        [HttpGet("execute-payment")]
-        public IActionResult ExecutePayment(string paymentId, string token, string PayerID)
-        {
-            var payment = _PaypalServices.ExecutePayment(paymentId, PayerID);
 
-            // Hint: You can save the transaction details to your database using payment/buyer info
 
-            return Ok();
-        }
 
-        [HttpGet("execute-sucess")]
-        public IActionResult Success()
-        {
-            return Ok();
-        }
-
-        [HttpGet("execute-cancel")]
-        public IActionResult Cancel()
-        {
-            return Cancel();
-        }
     }
 }

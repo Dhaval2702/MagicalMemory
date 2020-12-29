@@ -1,3 +1,5 @@
+using WebApi.Models.Payment;
+
 namespace WebApi.Helpers
 {
     public class AppSettings
@@ -13,5 +15,8 @@ namespace WebApi.Helpers
         public int SmtpPort { get; set; }
         public string SmtpUser { get; set; }
         public string SmtpPass { get; set; }
+
+        public PayUPaymentSetting PayUPaymentSetting { get; set; }
+
     }
 }

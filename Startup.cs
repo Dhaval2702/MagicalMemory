@@ -1,17 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using PaypalExpressCheckout.BusinessLogic;
-using PaypalExpressCheckout.BusinessLogic.ConfigOptions;
-using PaypalExpressCheckout.BusinessLogic.Interfaces;
 using System;
 using System.IO;
 using WebApi.Helpers;
 using WebApi.Middleware;
+using WebApi.Models.Payment;
 using WebApi.Services;
 using static WebApi.Services.ICountryService;
 
@@ -38,15 +35,15 @@ namespace WebApi
              Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
             // configure strongly typed settings object
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
+            services.Configure<PayUPaymentSetting>(Configuration.GetSection("PayUPaymentSetting"));
             // configure DI for application services
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IChildService, ChildService>();
-            services.AddSingleton<IPaypalServices, PaypalServices>();
+            services.AddScoped<IPayUPaymentService, PayUPaymentService>();
             services.AddScoped<IDashBoardService, DashBoardService>();
-            services.Configure<PayPalAuthOptions>(Configuration.GetSection("PayPalSettings"));
+            
         }
 
         // configure the HTTP request pipeline
