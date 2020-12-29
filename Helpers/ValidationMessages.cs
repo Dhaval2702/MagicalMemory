@@ -15,6 +15,7 @@ namespace WebApi.Helpers
             public const string ResetPassword = "Password reset successful, Mom !! you can now login";
             public const string LoginFailed = "Oh no Mom, something went wrong. I think ID or Password or both which you are entering are wrong.";
             public const string EmailConfirmationFailed = "Oh no, email confirmation failed.";
+            public const string NewChildrenAddConfirmation = "Hey Mom,You have added me successfully.";
         }
     }
 

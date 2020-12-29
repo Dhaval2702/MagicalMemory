@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using WebApi.Helpers;
 using WebApi.Models.Children;
 using WebApi.Services;
 
@@ -16,7 +17,7 @@ namespace WebApi.Controllers
     public class ChildController : ControllerBase
     {
         private readonly IChildService _childService;
-       
+
         /// <summary>
         /// Constructor for Child Controller
         /// </summary>
@@ -35,12 +36,10 @@ namespace WebApi.Controllers
         [HttpPost("add-new-children")]
         public IActionResult AddNewChildDetails(ChildrenRequest model)
         {
-          Guid childId = _childService.AddNewChildDetails(model);
-
+            Guid childId = _childService.AddNewChildDetails(model);
             //Update ChildPayment History
-
             _childService.AddChildrenPaymentHistory(model.AccountId, childId, model.ChildDOB);
-            return Ok(new { message = "Registration successful, please check your email for verification instructions" });
+            return Ok(new { message = ValidationMessages.Messages.NewChildrenAddConfirmation });
         }
 
         /// <summary>
@@ -94,10 +93,10 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("upload-photo-memory")]
-        public IActionResult UploadPhotoMemory(Guid childId,Guid memoryId,string memoryName, List<IFormFile> formFiles)
+        public IActionResult UploadPhotoMemory(Guid childId, Guid memoryId, string memoryName, List<IFormFile> formFiles)
         {
             var response = _childService.AddUpdateChildMemories(childId, memoryId, memoryName, formFiles);
             return Ok(response);
         }
-   }
+    }
 }
