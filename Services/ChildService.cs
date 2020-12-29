@@ -27,6 +27,8 @@ namespace WebApi.Services
         bool AddUpdateChildMemories(Guid childId, Guid memoryId, string memoryName, List<IFormFile> formFiles);
         List<ChildrenPaymentHistoryResponse> AddChildrenPaymentHistory(int accountId, Guid childId, DateTime childDob);
         List<ChildrenPaymentHistoryResponse> GetChildrenPaymentHistory(Guid childId);
+        bool UpdateChildPaymentHistory(int accountId, Guid childId, string paymentYear);
+
 
     }
 
@@ -202,7 +204,37 @@ namespace WebApi.Services
             return childrenPaymentHistoryResponses;
         }
 
+        /// <summary>
+        /// Update child Payment History Details
+        /// </summary>
+        /// <param name="accountId">account Id</param>
+        /// <param name="childId">child Id</param>
+        /// <param name="paymentYear">Payment Id</param>
+        /// <returns></returns>
+        public bool UpdateChildPaymentHistory(int accountId, Guid childId, string paymentYear)
+        {
+            bool isUpdatePayment = false;
+            //Extract Year from Child Date of Birth
+            var childPaymenthistorydetails = _context.ChildPaymentHistory
+                .Where(x => x.AccountId == accountId && x.ChildId == childId && x.PaymentYear == paymentYear).FirstOrDefault();
 
+            childPaymenthistorydetails.PaymentYear = paymentYear;
+            childPaymenthistorydetails.IsUserOnTrial = false;
+            childPaymenthistorydetails.IsUserPaid = true;
+            _context.ChildPaymentHistory.Update(childPaymenthistorydetails);
+            int success = _context.SaveChanges();
+
+            if (success > 0) isUpdatePayment = true;
+
+            return isUpdatePayment;
+
+        }
+
+        /// <summary>
+        /// Get Children payment History
+        /// </summary>
+        /// <param name="childId"></param>
+        /// <returns></returns>
         public List<ChildrenPaymentHistoryResponse> GetChildrenPaymentHistory(Guid childId)
         {
             List<ChildrenPaymentHistoryResponse> childrenPaymentHistoryResponses = new List<ChildrenPaymentHistoryResponse>();
@@ -217,7 +249,7 @@ namespace WebApi.Services
         /// <param name="memoryId"></param>
         /// <param name="formFiles"></param>
         /// <returns></returns>
-        private bool UploadMemoryFiles(Guid childId, Guid memoryId,string memoryName, List<IFormFile> formFiles)
+        private bool UploadMemoryFiles(Guid childId, Guid memoryId, string memoryName, List<IFormFile> formFiles)
         {
             int addUpdatePhoto = 0;
             bool fileuploaded = false;

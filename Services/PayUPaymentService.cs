@@ -8,20 +8,24 @@ namespace WebApi.Services
 {
     public interface IPayUPaymentService
     {
-        PayUPaymentResponse getUserPaymentDetails(int accountId);
+        PayUPaymentResponse getUserPaymentDetails(int accountId, string paymentYear);
+
+        bool UpdateChildPaymentDetaisForSucess(int accountId, Guid childId, string paymentYear);
     }
     public class PayUPaymentService : IPayUPaymentService
     {
         private readonly PayUPaymentSetting _payUPaymentSetting;
         private readonly IAccountService _accountService;
-        public PayUPaymentService(IAccountService accountService, IOptions<PayUPaymentSetting> payUPaymentSetting)
+        private readonly IChildService _childService;
+        public PayUPaymentService(IAccountService accountService, IChildService childService, IOptions<PayUPaymentSetting> payUPaymentSetting)
         {
             _accountService = accountService;
+            _childService = childService;
             _payUPaymentSetting = payUPaymentSetting.Value;
         }
 
 
-        public PayUPaymentResponse getUserPaymentDetails(int accountId)
+        public PayUPaymentResponse getUserPaymentDetails(int accountId, string paymentYear)
         {
 
             var accountdetails = _accountService.GetById(accountId);
@@ -35,7 +39,7 @@ namespace WebApi.Services
             payUPaymentResponse.Email = accountdetails.Email;
             payUPaymentResponse.PhoneNumber = accountdetails.MobileNumber;
             payUPaymentResponse.ProductInfo = _payUPaymentSetting.ProductInfo;
-            payUPaymentResponse.SuccessURL = _payUPaymentSetting.SuccessUrl;
+            payUPaymentResponse.SuccessURL = _payUPaymentSetting.SuccessUrl + "/" + paymentYear;
             payUPaymentResponse.FailureUrl = _payUPaymentSetting.FailureUrl;
 
             if (string.IsNullOrEmpty(payUPaymentResponse.TransectionId)) // generating txnid
@@ -113,10 +117,18 @@ namespace WebApi.Services
                     hash1 = Generatehash512(hash_string).ToLower();         //generating hash
                     payUPaymentResponse.PayUTransectionURl = _payUPaymentSetting.PayuBaseUrl + "/_payment";// setting URL
                     payUPaymentResponse.HashString = hash1;
-                    
+
                 }
             }
             return payUPaymentResponse;
+        }
+
+
+
+        public bool UpdateChildPaymentDetaisForSucess(int accountId, Guid childId, string paymentYear)
+        {
+            return _childService.UpdateChildPaymentHistory(accountId, childId, paymentYear);
+
         }
 
         /// <summary>

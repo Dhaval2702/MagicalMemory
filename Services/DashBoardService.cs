@@ -16,7 +16,7 @@ namespace WebApi.Services
     }
 
     /// <summary>
-    /// 
+    /// This is DashBoard Service 
     /// </summary>
     public class DashBoardService : IDashBoardService
     {
@@ -41,7 +41,12 @@ namespace WebApi.Services
         }
 
 
-
+        /// <summary>
+        /// Prepare User Dashboard
+        /// </summary>
+        /// <param name="accountId">account Id</param>
+        /// <param name="childId">child Id</param>
+        /// <returns>DashBoard Response</returns>
         public DashBoardResponse PrepareUserDashboard(int accountId, Guid childId)
         {
 
