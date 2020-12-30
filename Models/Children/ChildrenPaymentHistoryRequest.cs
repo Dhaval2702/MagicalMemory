@@ -9,6 +9,8 @@ namespace WebApi.Models.Children
         public string PaymentYear { get; set; }
         public bool? IsUserPaid { get; set; }
         public bool? IsUserOnTrial { get; set; }
+        public bool isBirthYear { get; set; }
+        public string Month { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }

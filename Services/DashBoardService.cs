@@ -12,7 +12,7 @@ namespace WebApi.Services
     /// </summary>
     public interface IDashBoardService
     {
-        DashBoardResponse PrepareUserDashboard(int accountId, Guid childId);
+        DashBoardResponse PrepareUserDashboard(int accountId);
     }
 
     /// <summary>
@@ -47,22 +47,18 @@ namespace WebApi.Services
         /// <param name="accountId">account Id</param>
         /// <param name="childId">child Id</param>
         /// <returns>DashBoard Response</returns>
-        public DashBoardResponse PrepareUserDashboard(int accountId, Guid childId)
+        public DashBoardResponse PrepareUserDashboard(int accountId)
         {
-
             DashBoardResponse dashBoardResponse = new DashBoardResponse();
-           
             // Retrive User Account Deteails
             var accountDetails = _accountService.GetById(accountId);
-            var childrenpaymentHistory = new List<ChildrenPaymentHistoryResponse>();
+        
             // Retrive Children Details By Account Id
-            var childrenDetails = _childService.GetChildrenDetails(childId);
+            var childrenDetails = _childService.GetAllChildrenDetailsByAccountId(accountId);
 
             // Retrive Children Payment History Details.
-            var childrenPaymentHistoryDetails = _childService.GetChildrenPaymentHistory(childrenDetails.ChildId);
             dashBoardResponse.AccountResponse = accountDetails;
             dashBoardResponse.ChildrenResponse = childrenDetails;
-            dashBoardResponse.childrenPaymentHistoryResponses = childrenPaymentHistoryDetails;
             return dashBoardResponse;
 
         }

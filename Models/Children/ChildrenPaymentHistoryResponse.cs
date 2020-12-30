@@ -12,6 +12,8 @@ namespace WebApi.Models.Children
         [ForeignKey("ChildId")]
         public Guid ChildId { get; set; }
         public string PaymentYear { get; set; }
+        public bool isBirthYear { get; set; }
+        public string Month { get; set; }
         public bool IsUserPaid { get; set; }
         public bool IsUserOnTrial { get; set; }
         public DateTime? CreateDate { get; set; }

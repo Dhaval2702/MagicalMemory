@@ -10,8 +10,6 @@ namespace WebApi.Models.DashBoard
     public class DashBoardResponse
     {
         public AccountResponse AccountResponse { get; set; }
-        public ChildrenResponse ChildrenResponse { get; set; }
-
-        public List<ChildrenPaymentHistoryResponse> childrenPaymentHistoryResponses { get; set; }
+        public  List<ChildrenResponse> ChildrenResponse { get; set; }
     }
 }

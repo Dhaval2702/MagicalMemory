@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebApi.Helpers;
 using WebApi.Models.Children;
 using WebApi.Services;
@@ -93,10 +94,28 @@ namespace WebApi.Controllers
         }
 
         [HttpPut("upload-photo-memory")]
-        public IActionResult UploadPhotoMemory(Guid childId, Guid memoryId, string memoryName, List<IFormFile> formFiles)
+        public IActionResult UploadPhotoMemory(Guid childId, Guid memoryId, string memoryName, string memoryYear, List<IFormFile> formFiles)
         {
-            var response = _childService.AddUpdateChildMemories(childId, memoryId, memoryName, formFiles);
-            return Ok(response);
+            var response = _childService.AddUpdateChildMemories(childId, memoryId, memoryName, memoryYear, formFiles);
+            return response ?
+                 Ok("Hey Mom! You have Added our Memory Successfuly.") : Problem("Hey Mom! It looks like We are not subscribed to This Year.");
         }
+
+
+        [HttpGet("get-child-photo-memory")]
+        public async Task<IActionResult> GetChildmemory(Guid childId, string memoryYear)
+        {
+            var response = _childService.getChildmemory(childId, memoryYear);
+            return response.Count > 0 ? 
+                Ok(response) : Problem("Hey Mom! Either We are not subscribed to This Year or We have not uploded any Photos.");
+        }
+
+        [HttpGet("get-child-vidio-memory")]
+        public FileResult Get(Guid childId, Guid memoryId, string memoryYear)
+        {
+            string vidiopath = _childService.GetVideoByMemoryId(childId, memoryId, memoryYear);
+            return PhysicalFile(vidiopath, "application/octet-stream", enableRangeProcessing: true);
+        }
+
     }
 }

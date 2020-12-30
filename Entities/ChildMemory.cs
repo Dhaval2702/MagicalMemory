@@ -11,12 +11,13 @@ namespace WebApi.Entities
         public Guid MemoryId { get; set; }
         public string MemoryName { get; set; }
         public string MemoryPhoto { get; set; }
-
+        public string MemoryYear { get; set; }
+        public string ContentType { get; set; }
         [ForeignKey("ChildId")]
         public Guid ChildId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 
-     //   public virtual ICollection<Children> Children { get; set; }
+        //   public virtual ICollection<Children> Children { get; set; }
     }
 }

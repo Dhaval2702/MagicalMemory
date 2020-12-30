@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using WebApi.Services;
 
 namespace WebApi.Controllers
@@ -30,15 +29,11 @@ namespace WebApi.Controllers
         /// <param name="childId">child Id</param>
         /// <returns></returns>
         [HttpGet("prepare-dashboard")]
-        public IActionResult PrepareUserDashBoard(int accountId,Guid childId)
+        public IActionResult PrepareUserDashBoard(int accountId)
         {
-          var response =  _dashBoardService.PrepareUserDashboard(accountId, childId);
+          var response =  _dashBoardService.PrepareUserDashboard(accountId);
            return Ok(response);
         }
-
-
-
-
 
     }
 }

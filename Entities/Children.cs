@@ -11,7 +11,7 @@ namespace WebApi.Entities
         public Guid ChildId { get; set; }
         public string ChildName { get; set; }
         public DateTime ChildDOB { get; set; }
-        public int BirthWeight { get; set; }
+        public string BirthWeight { get; set; }
         public string ChildPhoto { get; set; }
         public int AccountId { get; set; }
         public string BloodGroup { get; set; }
@@ -24,5 +24,10 @@ namespace WebApi.Entities
 
         [ForeignKey("ChildId")]
         public virtual ICollection<ChildMemory> ChildMemory { get; set; }
+
+        [ForeignKey("ChildId")]
+        public virtual ICollection<ChildPaymentHistory> ChildPaymentHistory { get; set; }
+
+
     }
 }
