@@ -12,6 +12,9 @@ using System.Text;
 using WebApi.Entities;
 using WebApi.Helpers;
 using WebApi.Models.Accounts;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace WebApi.Services
 {
@@ -30,6 +33,9 @@ namespace WebApi.Services
         AccountResponse Create(CreateRequest model);
         AccountResponse Update(int id, UpdateRequest model);
         void Delete(int id);
+        bool AddUpdateUserProfile(int accountId, IFormFile userProfileImage);
+        byte[] getUserProfilePicture(int accountId);
+
     }
 
     public class AccountService : IAccountService
@@ -39,6 +45,7 @@ namespace WebApi.Services
         private readonly AppSettings _appSettings;
         private readonly IEmailService _emailService;
         private readonly IChildService _childService;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
 
         public AccountService(
@@ -46,13 +53,15 @@ namespace WebApi.Services
             IMapper mapper,
             IOptions<AppSettings> appSettings,
             IEmailService emailService,
-            IChildService childService)
+            IChildService childService,
+            IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             _mapper = mapper;
             _appSettings = appSettings.Value;
             _emailService = emailService;
             _childService = childService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress)
@@ -266,6 +275,84 @@ namespace WebApi.Services
             _context.Accounts.Remove(account);
             _context.SaveChanges();
         }
+
+        /// <summary>
+        /// Add Or Update user Profile Picture for User Account.
+        /// </summary>
+        /// <param name="accountId">accountId</param>
+        /// <param name="userProfileImage">userProfileImage</param>
+        /// <returns></returns>
+        public bool AddUpdateUserProfile(int accountId, IFormFile userProfileImage)
+        {
+            bool fileuploaded = false;
+            var accountDetails = getAccount(accountId);
+
+            return accountDetails != null
+                ? UploadUserProfileImage(accountDetails, userProfileImage) : fileuploaded;
+        }
+
+
+        public byte[] getUserProfilePicture(int accountId)
+        {
+            var accountDetails = GetById(accountId);
+            byte[] imageBytes = File.ReadAllBytes(accountDetails.ProfilePhoto);
+            return imageBytes;
+        }
+
+        private bool UploadUserProfileImage(Account accountdetails, IFormFile userProfileImage)
+        {
+            int addUpdatePhoto = 0;
+            bool fileuploaded = false;
+
+            if (accountdetails == null)
+            {
+                return fileuploaded;
+            }
+
+            else
+            {
+                accountdetails.ProfilePhoto = UploadImageFileToServer(userProfileImage, accountdetails.Id);
+                _context.Accounts.Update(accountdetails);
+                addUpdatePhoto = _context.SaveChanges();
+            }
+
+            if (addUpdatePhoto > 0)
+            {
+                fileuploaded = true;
+            }
+
+            return fileuploaded;
+        }
+
+
+        /// <summary>
+        /// Updload Profile Image for User
+        /// </summary>
+        /// <param name="file">file</param>
+        /// <param name="accountId">accountId</param>
+        /// <returns></returns>
+        private string UploadImageFileToServer(IFormFile file, int accountId)
+        {
+            var fileNameWithPath = string.Empty;
+            if (file.Length > 0)
+            {
+                // full path to file in temp location
+                var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PhotoMemories", accountId.ToString());
+                fileNameWithPath = string.Concat(filePath, "\\", file.FileName);
+
+                FileInfo fileInfo = new FileInfo(filePath);
+                if (!fileInfo.Exists)
+                    Directory.CreateDirectory(filePath);
+
+                using (var stream = new FileStream(fileNameWithPath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+            }
+
+            return fileNameWithPath;
+        }
+
 
         // helper methods
 

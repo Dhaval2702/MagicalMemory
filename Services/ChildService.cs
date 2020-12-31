@@ -76,7 +76,8 @@ namespace WebApi.Services
         {
             var children = _context.Children
                            .Include(c => c.ChildMemory)
-                           .Include(c => c.ChildSkill).Where(x => x.ChildId == childId).FirstOrDefault();
+                           .Include(c => c.ChildSkill)
+                           .Include(c => c.ChildPaymentHistory).Where(x => x.ChildId == childId).FirstOrDefault();
             if (children == null) throw new KeyNotFoundException("Children Not found!!!");
 
             // Remove Child Memory
@@ -90,7 +91,7 @@ namespace WebApi.Services
                 _context.ChildMemory.Remove(childMemory);
 
             }
-            
+
             // Remove Children Payment History.
             foreach (var childPaymentHistory in children.ChildPaymentHistory)
             {
@@ -285,10 +286,7 @@ namespace WebApi.Services
         {
             bool isUpdatePayment = false;
             //Extract Year from Child Date of Birth
-
-
             var childDetails = GetChildrenDetails(childId);
-
             if (childDetails != null && childDetails.ChildDOB.Year.ToString() == paymentYear)
             {
                 var firstYearchilldPayment = _context.ChildPaymentHistory
@@ -320,7 +318,6 @@ namespace WebApi.Services
             }
 
             return isUpdatePayment;
-
         }
 
         /// <summary>
@@ -365,7 +362,6 @@ namespace WebApi.Services
                     _context.ChildMemory.Add(childMemory);
                     addUpdatePhoto = _context.SaveChanges();
                 }
-
                 else
                 {
                     childrenDetails.MemoryPhoto = UploadImageFileToServer(file, childId);

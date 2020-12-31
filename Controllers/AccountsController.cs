@@ -206,8 +206,34 @@ namespace WebApi.Controllers
             return Ok(new { message = "Account deleted successfully" });
         }
 
-        // helper methods
+        /// <summary>
+        /// AddUpdateUserProfile
+        /// </summary>
+        /// <param name="accountId">account Id</param>
+        /// <param name="userProfileImage">user Profile Image</param>
+        /// <returns></returns>
+        [HttpPost("add-update-profile-picture")]
+       public IActionResult AddUpdateUserProfile(int accountId, IFormFile userProfileImage)
+        {
+            var ressponse = _accountService.AddUpdateUserProfile(accountId, userProfileImage);
+            return Ok(ressponse);
+        }
 
+        /// <summary>
+        /// get User Profile Picture
+        /// </summary>
+        /// <param name="accountId">account Id</param>
+        /// <returns>Profile Picture</returns>
+        /// 
+        [HttpGet("get-profile-picture")]
+        public IActionResult getUserProfilePicture(int accountId)
+        {
+            var ressponse = _accountService.getUserProfilePicture(accountId);
+            return Ok(ressponse);
+        }
+
+
+        // helper methods
         private void setTokenCookie(string token)
         {
             var cookieOptions = new CookieOptions
