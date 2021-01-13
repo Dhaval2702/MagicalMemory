@@ -72,6 +72,8 @@ namespace WebApi
             app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(x => x.MapControllers());
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
         }
     }
 }

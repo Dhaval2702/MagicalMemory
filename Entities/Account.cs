@@ -19,7 +19,6 @@ namespace WebApi.Entities
         public int CountryCode { get; set; }
         public string Country { get; set; }
         public string State { get; set; }
-        public DateTime DateOfBirth { get; set; }
         public string MobileNumber { get; set; }
         public string ResetToken { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
